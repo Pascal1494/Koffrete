@@ -1,0 +1,156 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Tableau de Bord - Koffrete{% endblock %}
+
+{% block body %}
+<nav class="bg-indigo-600 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+                <span class="text-white text-xl font-bold">Koffrete 🗃️</span>
+                <span class="text-indigo-200 text-sm ml-4 font-medium hidden sm:block">Gestion de Collection Multi-catégories</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-white text-sm bg-indigo-700 px-3 py-1.5 rounded-md font-medium">
+                    👤 {{ app.user.userIdentifier }}
+                </span>
+                <a href="{{ path('app_logout') }}" class="text-indigo-100 hover:text-white text-sm font-medium">
+                    Déconnexion
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Quota & Subscription Banner -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8 border border-gray-100">
+        <div class="md:flex md:items-center md:justify-between">
+            <div class="flex-1 min-w-0">
+                <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+                    Votre Espace Collectionneur
+                </h2>
+                <div class="mt-1 flex flex-col sm:flex-row sm:flex-wrap sm:space-x-6">
+                    <div class="mt-2 flex items-center text-sm text-gray-500">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800">
+                            Plan : {{ quota.subscriptionName }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-5 md:mt-0 md:ml-4 flex-shrink-0 w-full md:w-64">
+                <div class="text-sm font-medium text-gray-500 mb-1 flex justify-between">
+                    <span>Quota de médias :</span>
+                    <span class="font-bold text-gray-900">
+                        {{ quota.current }} / {% if quota.limit is null %}∞{% else %}{{ quota.limit }}{% endif %}
+                    </span>
+                </div>
+                {% if quota.limit is not null %}
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="h-2.5 rounded-full {% if quota.percentage >= 90 %}bg-red-600{% elseif quota.percentage >= 70 %}bg-yellow-400{% else %}bg-green-500{% endif %}" style="width: {{ quota.percentage }}%"></div>
+                    </div>
+                    {% if quota.isFull %}
+                        <p class="text-xs text-red-600 font-semibold mt-2">
+                            ⚠️ Votre quota est plein. Prenez un abonnement pour ajouter plus de médias !
+                        </p>
+                    {% else %}
+                        <p class="text-xs text-gray-500 mt-1.5">
+                            Il vous reste {{ quota.limit - quota.current }} emplacements libres.
+                        </p>
+                    {% endif %}
+                {% else %}
+                    <div class="w-full bg-yellow-100 border border-yellow-300 rounded-lg p-2 flex items-center">
+                        <span class="text-yellow-800 text-xs font-semibold">✨ Accès Premium Illimité Activé</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Collection Section -->
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-bold text-gray-900">Ma Bibliothèque ({{ items|length }} exemplaires)</h3>
+        <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            ➕ Ajouter un média
+        </button>
+    </div>
+
+    {% if items is empty %}
+        <div class="text-center bg-white rounded-lg shadow py-12 px-4 border border-dashed border-gray-300">
+            <span class="text-4xl">📚</span>
+            <h4 class="mt-4 text-lg font-medium text-gray-900">Votre collection est vide</h4>
+            <p class="mt-1 text-sm text-gray-500">Commencez à inventorier vos livres, disques et films dès maintenant.</p>
+            <div class="mt-6">
+                <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
+                    Ajouter mon premier exemplaire
+                </button>
+            </div>
+        </div>
+    {% else %}
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {% for item in items %}
+                <div class="bg-white overflow-hidden shadow rounded-lg border border-gray-150 flex flex-col justify-between">
+                    <div class="p-5">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2">
+                                    {% if item.media.author is defined %}
+                                        <span class="text-2xl" title="Livre">📖</span>
+                                        <span class="text-xs font-semibold uppercase text-blue-600 tracking-wider">Livre</span>
+                                    {% else %}
+                                        <span class="text-2xl" title="DVD">🎬</span>
+                                        <span class="text-xs font-semibold uppercase text-red-600 tracking-wider">DVD / Film</span>
+                                    {% endif %}
+                                </div>
+                                <h4 class="text-lg font-bold text-gray-900 mt-2">{{ item.media.title }}</h4>
+                                
+                                {% if item.media.author is defined %}
+                                    <p class="text-sm text-gray-600 font-medium">Auteur : {{ item.media.author }}</p>
+                                    {% if item.media.isbn %}
+                                        <p class="text-xs text-gray-400 font-mono mt-0.5">ISBN : {{ item.media.isbn }}</p>
+                                    {% endif %}
+                                {% else %}
+                                    <p class="text-sm text-gray-600 font-medium">Réalisateur : {{ item.media.director ?: 'Inconnu' }}</p>
+                                    <div class="flex space-x-2 text-xs text-gray-400 font-medium mt-0.5">
+                                        <span>Année : {{ item.media.releaseYear ?: 'Inconnue' }}</span>
+                                        <span>•</span>
+                                        <span>Durée : {{ item.media.durationInMinutes ?: '?' }} min</span>
+                                    </div>
+                                    {% if item.media.actors %}
+                                        <p class="text-xs text-gray-500 mt-2 italic line-clamp-1">
+                                            Acteurs : {{ item.media.actors|join(', ') }}
+                                        </p>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Personal copy attributes -->
+                        <div class="border-t border-gray-100 mt-4 pt-4 space-y-2">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-gray-500 font-medium">État :</span>
+                                <span class="px-2 py-0.5 rounded-full font-semibold bg-green-50 text-green-800 border border-green-200">
+                                    {{ item.condition }}
+                                </span>
+                            </div>
+                            {% if item.personalNotes %}
+                                <div class="text-xs text-gray-600 bg-gray-50 p-2 rounded border border-gray-100">
+                                    <span class="font-semibold text-gray-500">Note :</span> {{ item.personalNotes }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-5 py-3 border-t border-gray-100 flex items-center justify-between text-xs">
+                        <span class="text-gray-400">Acquis le {{ item.acquiredAt|date('d/m/Y') }}</span>
+                        <div class="flex space-x-2">
+                            <button class="text-indigo-600 hover:text-indigo-900 font-semibold">Modifier</button>
+                            <span class="text-gray-300">|</span>
+                            <button class="text-red-600 hover:text-red-900 font-semibold">Prêter</button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
