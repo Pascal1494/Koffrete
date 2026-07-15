@@ -25,9 +25,9 @@ class Loan
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $returnedAt = null;
 
-    #[ORM\ManyToOne(targetEntity: Media::class, inversedBy: 'loans')]
+    #[ORM\ManyToOne(targetEntity: UserItem::class, inversedBy: 'loans')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Media $media = null;
+    private ?UserItem $userItem = null;
 
     public function __construct()
     {
@@ -87,14 +87,14 @@ class Loan
         return $this;
     }
 
-    public function getMedia(): ?Media
+    public function getUserItem(): ?UserItem
     {
-        return $this->media;
+        return $this->userItem;
     }
 
-    public function setMedia(?Media $media): static
+    public function setUserItem(?UserItem $userItem): static
     {
-        $this->media = $media;
+        $this->userItem = $userItem;
 
         return $this;
     }
