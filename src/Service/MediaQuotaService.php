@@ -3,18 +3,18 @@
 namespace App\Service;
 
 use App\Entity\User;
-use App\Repository\MediaRepository;
+use App\Repository\UserItemRepository;
 
 class MediaQuotaService
 {
     public const DEFAULT_FREE_LIMIT = 10;
 
     public function __construct(
-        private readonly MediaRepository $mediaRepository
+        private readonly UserItemRepository $userItemRepository
     ) {}
 
     /**
-     * Checks if a user is allowed to add another media item.
+     * Checks if a user is allowed to add another physical media item copy.
      */
     public function canUserAddMedia(User $user): bool
     {
@@ -28,7 +28,7 @@ class MediaQuotaService
             return true;
         }
 
-        $currentCount = $this->mediaRepository->count(['user' => $user]);
+        $currentCount = $this->userItemRepository->count(['user' => $user]);
 
         return $currentCount < $limit;
     }

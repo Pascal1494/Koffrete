@@ -2,7 +2,7 @@
 
 namespace App\Validator;
 
-use App\Entity\Media;
+use App\Entity\UserItem;
 use App\Service\MediaQuotaService;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -24,11 +24,11 @@ class AssertQuotaValidator extends ConstraintValidator
             return;
         }
 
-        if (!$value instanceof Media) {
-            throw new UnexpectedTypeException($value, Media::class);
+        if (!$value instanceof UserItem) {
+            throw new UnexpectedTypeException($value, UserItem::class);
         }
 
-        // If the media already exists (has an ID), we are just editing it.
+        // If the UserItem already exists (has an ID), we are just editing it (e.g. changing notes/condition).
         // We do not block editing of existing items!
         if ($value->getId() !== null) {
             return;
@@ -41,7 +41,7 @@ class AssertQuotaValidator extends ConstraintValidator
 
         if (!$this->quotaService->canUserAddMedia($user)) {
             $this->context->buildViolation($constraint->message)
-                ->atPath('title') // Attach violation to the title field for better UI presentation
+                ->atPath('condition') // Attach violation to 'condition' field for UX in the copy form
                 ->addViolation();
         }
     }
