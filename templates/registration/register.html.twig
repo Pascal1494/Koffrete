@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un compte - Koffrete{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Koffrete 🗃️
+        </h2>
+        <p class="mt-2 text-center text-sm text-gray-600">
+            Créez votre compte freemium gratuit (limité à 10 médias)
+        </p>
+    </div>
+
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            {{ form_start(registrationForm, {'attr': {'class': 'space-y-6'}}) }}
+                {% if not registrationForm.vars.valid %}
+                    <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-md">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                ❌
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-red-700">
+                                    Veuillez corriger les erreurs ci-dessous.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div>
+                    {{ form_label(registrationForm.email, 'Adresse email') }}
+                    <div class="mt-1">
+                        {{ form_widget(registrationForm.email) }}
+                    </div>
+                    <p class="text-xs text-red-600 mt-1">{{ form_errors(registrationForm.email) }}</p>
+                </div>
+
+                <div>
+                    {{ form_label(registrationForm.plainPassword, 'Mot de passe') }}
+                    <div class="mt-1">
+                        {{ form_widget(registrationForm.plainPassword) }}
+                    </div>
+                    <p class="text-xs text-red-600 mt-1">{{ form_errors(registrationForm.plainPassword) }}</p>
+                </div>
+
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        {{ form_widget(registrationForm.agreeTerms) }}
+                    </div>
+                    <div class="ml-2 text-sm">
+                        <label for="{{ registrationForm.agreeTerms.vars.id }}" class="font-medium text-gray-700">
+                            J'accepte les conditions d'utilisation et la politique de confidentialité
+                        </label>
+                        <p class="text-xs text-red-600 mt-1">{{ form_errors(registrationForm.agreeTerms) }}</p>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        S'inscrire gratuitement
+                    </button>
+                </div>
+            {{ form_end(registrationForm) }}
+
+            <div class="mt-6">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-white text-gray-500">
+                            Déjà membre ?
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <a href="{{ path('app_login') }}" class="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Se connecter à mon compte
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
