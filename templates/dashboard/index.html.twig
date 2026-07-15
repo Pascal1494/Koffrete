@@ -70,9 +70,14 @@
     <!-- Collection Section -->
     <div class="flex justify-between items-center mb-6">
         <h3 class="text-xl font-bold text-gray-900">Ma Bibliothèque ({{ items|length }} exemplaires)</h3>
-        <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-            ➕ Ajouter un média
-        </button>
+        <div class="flex space-x-2">
+            <a href="{{ path('app_dashboard_add_book') }}" class="inline-flex items-center px-3 py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+                📖 Ajouter un Livre
+            </a>
+            <a href="{{ path('app_dashboard_add_dvd') }}" class="inline-flex items-center px-3 py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none">
+                🎬 Ajouter un DVD
+            </a>
+        </div>
     </div>
 
     {% if items is empty %}
@@ -80,10 +85,13 @@
             <span class="text-4xl">📚</span>
             <h4 class="mt-4 text-lg font-medium text-gray-900">Votre collection est vide</h4>
             <p class="mt-1 text-sm text-gray-500">Commencez à inventorier vos livres, disques et films dès maintenant.</p>
-            <div class="mt-6">
-                <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
-                    Ajouter mon premier exemplaire
-                </button>
+            <div class="mt-6 flex justify-center space-x-4">
+                <a href="{{ path('app_dashboard_add_book') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+                    📖 Ajouter mon 1er Livre
+                </a>
+                <a href="{{ path('app_dashboard_add_dvd') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700">
+                    🎬 Ajouter mon 1er DVD
+                </a>
             </div>
         </div>
     {% else %}
