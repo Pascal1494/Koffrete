@@ -67,9 +67,19 @@
         </div>
     </div>
 
+    <!-- Universal Search Bar -->
+    <div class="bg-white rounded-lg shadow p-4 mb-6 border border-gray-100">
+        <div class="relative rounded-md shadow-sm">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-gray-400 text-lg">🔍</span>
+            </div>
+            <input type="text" id="universal_search" placeholder="Rechercher par titre, auteur, réalisateur, acteur principal, année, état..." class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-3 py-3 border-gray-300 rounded-md text-sm text-gray-900 placeholder-gray-400 bg-gray-50">
+        </div>
+    </div>
+
     <!-- Collection Section -->
     <div class="flex justify-between items-center mb-6">
-        <h3 class="text-xl font-bold text-gray-900">Ma Bibliothèque ({{ items|length }} exemplaires)</h3>
+        <h3 class="text-xl font-bold text-gray-900">Ma Bibliothèque (<span id="visible_count">{{ items|length }}</span>/{{ items|length }} exemplaires)</h3>
         <div class="flex space-x-2">
             <a href="{{ path('app_dashboard_add_book') }}" class="inline-flex items-center px-3 py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
                 📖 Ajouter un Livre
@@ -95,9 +105,22 @@
             </div>
         </div>
     {% else %}
-        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div id="no_results" class="text-center bg-white rounded-lg shadow py-12 px-4 border border-dashed border-gray-200 hidden">
+            <span class="text-4xl">🧐</span>
+            <h4 class="mt-4 text-lg font-medium text-gray-900">Aucun résultat trouvé</h4>
+            <p class="mt-1 text-sm text-gray-500">Essayez de modifier votre mot-clé de recherche.</p>
+        </div>
+
+        <div id="collection_grid" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {% for item in items %}
-                <div class="bg-white overflow-hidden shadow rounded-lg border border-gray-150 flex flex-col justify-between">
+                {% set actors_search = item.media.actors is defined and item.media.actors ? item.media.actors|join(' ') : '' %}
+                {% set author_search = item.media.author is defined ? item.media.author : '' %}
+                {% set director_search = item.media.director is defined ? item.media.director : '' %}
+                {% set year_search = item.media.releaseYear is defined ? item.media.releaseYear : '' %}
+                
+                <!-- Compiled lowercase metadata string for client-side search -->
+                <div class="media-card bg-white overflow-hidden shadow rounded-lg border border-gray-150 flex flex-col justify-between"
+                     data-search="{{ (item.media.title ~ ' ' ~ author_search ~ ' ' ~ director_search ~ ' ' ~ actors_search ~ ' ' ~ year_search ~ ' ' ~ item.condition ~ ' ' ~ item.personalNotes)|lower }}">
                     <div class="p-5">
                         <div class="flex items-start justify-between">
                             <div class="flex-1">
@@ -113,12 +136,12 @@
                                 <h4 class="text-lg font-bold text-gray-900 mt-2">{{ item.media.title }}</h4>
                                 
                                 {% if item.media.author is defined %}
-                                    <p class="text-sm text-gray-600 font-medium">Auteur : {{ item.media.author }}</p>
+                                    <p class="text-sm text-gray-600 font-medium">Auteur : <span class="highlight-target font-bold text-indigo-700">{{ item.media.author }}</span></p>
                                     {% if item.media.isbn %}
                                         <p class="text-xs text-gray-400 font-mono mt-0.5">ISBN : {{ item.media.isbn }}</p>
                                     {% endif %}
                                 {% else %}
-                                    <p class="text-sm text-gray-600 font-medium">Réalisateur : {{ item.media.director ?: 'Inconnu' }}</p>
+                                    <p class="text-sm text-gray-600 font-medium">Réalisateur : <span class="highlight-target font-bold text-indigo-700">{{ item.media.director ?: 'Inconnu' }}</span></p>
                                     <div class="flex space-x-2 text-xs text-gray-400 font-medium mt-0.5">
                                         <span>Année : {{ item.media.releaseYear ?: 'Inconnue' }}</span>
                                         <span>•</span>
@@ -126,7 +149,7 @@
                                     </div>
                                     {% if item.media.actors %}
                                         <p class="text-xs text-gray-500 mt-2 italic line-clamp-1">
-                                            Acteurs : {{ item.media.actors|join(', ') }}
+                                            Acteurs : <span class="highlight-target font-bold text-indigo-700">{{ item.media.actors|join(', ') }}</span>
                                         </p>
                                     {% endif %}
                                 {% endif %}
@@ -161,4 +184,47 @@
         </div>
     {% endif %}
 </div>
+
+<!-- Instant Universal Search Javascript -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('universal_search');
+    
+    if (searchInput) {
+        const cards = document.querySelectorAll('.media-card');
+        const noResults = document.getElementById('no_results');
+        const visibleCountSpan = document.getElementById('visible_count');
+
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.trim().toLowerCase();
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const searchString = card.getAttribute('data-search') || '';
+                
+                if (searchString.includes(query)) {
+                    card.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            // Update visible counter
+            if (visibleCountSpan) {
+                visibleCountSpan.textContent = visibleCount;
+            }
+
+            // Display or hide no results placeholder
+            if (noResults) {
+                if (visibleCount === 0 && cards.length > 0) {
+                    noResults.classList.remove('hidden');
+                } else {
+                    noResults.classList.add('hidden');
+                }
+            }
+        });
+    }
+});
+</script>
 {% endblock %}
