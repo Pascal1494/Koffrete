@@ -25,7 +25,7 @@ class UserItem
     #[ORM\JoinColumn(nullable: false)]
     private ?Media $media = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(name: '`condition`', length: 255)]
     private ?string $condition = null; // e.g. "Mint", "Very Good", "Good", "Poor"
 
     #[ORM\Column(type: 'text', nullable: true)]
