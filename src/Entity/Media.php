@@ -3,12 +3,14 @@
 namespace App\Entity;
 
 use App\Repository\MediaRepository;
+use App\Validator\AssertQuota;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MediaRepository::class)]
 #[ORM\InheritanceType('JOINED')]
+#[AssertQuota]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap([
     'book' => Book::class,
