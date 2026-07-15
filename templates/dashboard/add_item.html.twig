@@ -26,7 +26,32 @@
             <span class="ml-2">{{ title }}</span>
         </h2>
 
-        {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+        <!-- Quick API Autofill Widget -->
+        <div class="bg-indigo-50 border border-indigo-100 rounded-lg p-4 mb-6">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-800 mb-2">🔍 Assistant de Remplissage Automatique</h4>
+            {% if type == 'book' %}
+                <div class="flex space-x-2">
+                    <input type="text" id="api_search_isbn" placeholder="Saisissez un ISBN (ex: 9780261103344)" class="appearance-none block w-full px-3 py-1.5 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <button type="button" id="btn_search_book" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-semibold rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">
+                        Rechercher
+                    </button>
+                </div>
+            {% else %}
+                <div class="relative flex flex-col space-y-2">
+                    <div class="flex space-x-2">
+                        <input type="text" id="api_search_title" placeholder="Rechercher un titre de film (ex: Inception)" class="appearance-none block w-full px-3 py-1.5 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <button type="button" id="btn_search_movie" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-semibold rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">
+                            Rechercher
+                        </button>
+                    </div>
+                    <!-- Suggestion list -->
+                    <div id="movie_suggestions" class="absolute left-0 right-0 top-10 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto hidden z-50"></div>
+                </div>
+            {% endif %}
+            <p id="api_status" class="text-xs text-gray-500 mt-2 italic hidden"></p>
+        </div>
+
+        {{ form_start(form, {'attr': {'id': 'media_form', 'class': 'space-y-6'}}) }}
             {% if not form.vars.valid %}
                 <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-md mb-6">
                     <div class="flex">
@@ -88,4 +113,131 @@
         {{ form_end(form) }}
     </div>
 </div>
+
+<!-- Vanilla JS API Integration Script -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const statusText = document.getElementById('api_status');
+    
+    function showStatus(text, isError = false) {
+        statusText.classList.remove('hidden', 'text-gray-500', 'text-green-600', 'text-red-600');
+        statusText.classList.add(isError ? 'text-red-600' : 'text-green-600');
+        statusText.textContent = text;
+    }
+
+    {% if type == 'book' %}
+    {
+        // Book Autofill Logic
+        const searchBtn = document.getElementById('btn_search_book');
+        const isbnInput = document.getElementById('api_search_isbn');
+
+        searchBtn.addEventListener('click', () => {
+            const isbn = isbnInput.value.trim();
+            if (!isbn) {
+                showStatus('Veuillez saisir un ISBN.', true);
+                return;
+            }
+
+            showStatus('Recherche en cours dans l\'API Google Books...', false);
+            statusText.classList.add('text-gray-500');
+
+            fetch(`/api/metadata/book/${isbn}`)
+                .then(res => {
+                    if (!res.ok) throw new Error();
+                    return res.json();
+                })
+                .then(data => {
+                    // Populate Symfony Form Fields
+                    document.querySelector('input[id$="_media_title"]').value = data.title;
+                    document.querySelector('input[id$="_media_author"]').value = data.author;
+                    document.querySelector('input[id$="_media_isbn"]').value = data.isbn;
+
+                    showStatus('✨ Formulaire pré-rempli avec succès : "' + data.title + '" !');
+                })
+                .catch(() => {
+                    showStatus('❌ Aucun livre trouvé pour cet ISBN. Saisie manuelle nécessaire.', true);
+                });
+        });
+    }
+    {% else %}
+    {
+        // Movie Autofill Logic
+        const searchBtn = document.getElementById('btn_search_movie');
+        const titleInput = document.getElementById('api_search_title');
+        const suggestionsBox = document.getElementById('movie_suggestions');
+
+        searchBtn.addEventListener('click', () => {
+            const query = titleInput.value.trim();
+            if (!query) {
+                showStatus('Veuillez saisir un titre.', true);
+                return;
+            }
+
+            showStatus('Recherche en cours dans l\'API TMDb...', false);
+            statusText.classList.add('text-gray-500');
+
+            fetch(`/api/metadata/movie/search?q=${encodeURIComponent(query)}`)
+                .then(res => {
+                    if (!res.ok) throw new Error();
+                    return res.json();
+                })
+                .then(results => {
+                    suggestionsBox.innerHTML = '';
+                    if (results.length === 0) {
+                        showStatus('❌ Aucun film trouvé. Saisie manuelle nécessaire.', true);
+                        suggestionsBox.classList.add('hidden');
+                        return;
+                    }
+
+                    results.slice(0, 5).forEach(movie => {
+                        const year = movie.release_date ? movie.release_date.substring(0, 4) : 'année inconnue';
+                        const div = document.createElement('div');
+                        div.className = 'px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm font-medium text-gray-800 border-b border-gray-100 last:border-0';
+                        div.textContent = `🎬 ${movie.title} (${year})`;
+                        div.addEventListener('click', () => selectMovie(movie.id));
+                        suggestionsBox.appendChild(div);
+                    });
+
+                    suggestionsBox.classList.remove('hidden');
+                    statusText.classList.add('hidden');
+                })
+                .catch(() => {
+                    showStatus('❌ Erreur de communication avec l\'API de recherche.', true);
+                });
+        });
+
+        function selectMovie(id) {
+            suggestionsBox.classList.add('hidden');
+            showStatus('Récupération des détails complets du film...', false);
+            statusText.classList.add('text-gray-500');
+
+            fetch(`/api/metadata/movie/details/${id}`)
+                .then(res => {
+                    if (!res.ok) throw new Error();
+                    return res.json();
+                })
+                .then(movie => {
+                    // Populate Symfony Form Fields
+                    document.querySelector('input[id$="_media_title"]').value = movie.title;
+                    document.querySelector('input[id$="_media_director"]').value = movie.director || '';
+                    document.querySelector('input[id$="_media_releaseYear"]').value = movie.releaseYear || '';
+                    document.querySelector('input[id$="_media_durationInMinutes"]').value = movie.durationInMinutes || '';
+
+                    showStatus('✨ Formulaire pré-rempli avec succès : "' + movie.title + '" !');
+                })
+                .catch(() => {
+                    showStatus('❌ Erreur lors de la récupération des détails.', true);
+                });
+        }
+
+        // Close suggestions on outside click
+        document.addEventListener('click', (e) => {
+            if (!suggestionsBox.contains(e.target) && e.target !== titleInput && e.target !== searchBtn) {
+                suggestionsBox.classList.add('hidden');
+            }
+        });
+    }
+    {% endif %}
+});
+</script>
 {% endblock %}
