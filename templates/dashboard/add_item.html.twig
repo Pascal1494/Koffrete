@@ -76,7 +76,40 @@
                 <h3 class="text-sm font-semibold uppercase tracking-wider text-indigo-600 mb-2 border-b border-indigo-50 pb-1">
                     1. Caractéristiques de l'Édition (Catalogue)
                 </h3>
-                {{ form_widget(form.media) }}
+                {% if type == 'custom' %}
+                    <div class="space-y-4">
+                        <div>
+                            {{ form_label(form.media.title) }}
+                            <div class="mt-1">
+                                {{ form_widget(form.media.title) }}
+                            </div>
+                            <p class="text-xs text-red-600 mt-1">{{ form_errors(form.media.title) }}</p>
+                        </div>
+                        <div>
+                            {{ form_label(form.media.type) }}
+                            <div class="mt-1">
+                                {{ form_widget(form.media.type) }}
+                            </div>
+                            <p class="text-xs text-red-600 mt-1">{{ form_errors(form.media.type) }}</p>
+                        </div>
+                        <div id="custom_type_name_container">
+                            {{ form_label(form.media.customType) }}
+                            <div class="mt-1">
+                                {{ form_widget(form.media.customType) }}
+                            </div>
+                            <p class="text-xs text-red-600 mt-1">{{ form_errors(form.media.customType) }}</p>
+                        </div>
+                        <div>
+                            {{ form_label(form.media.description) }}
+                            <div class="mt-1">
+                                {{ form_widget(form.media.description) }}
+                            </div>
+                            <p class="text-xs text-red-600 mt-1">{{ form_errors(form.media.description) }}</p>
+                        </div>
+                    </div>
+                {% else %}
+                    {{ form_widget(form.media) }}
+                {% endif %}
             </div>
 
             <!-- Form fields for Copy (Condition, Notes) -->
@@ -129,17 +162,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Conditional Custom Type Visibility Logic
     const selectElement = document.getElementById('custom_media_type_select');
+    const container = document.getElementById('custom_type_name_container');
     const customTypeInput = document.querySelector('input[id$="_media_customType"]');
     
-    if (selectElement && customTypeInput) {
-        const container = customTypeInput.closest('div');
-        
+    if (selectElement && container) {
         function toggleCustomType() {
             if (selectElement.value === 'Autre') {
                 container.style.display = 'block';
             } else {
                 container.style.display = 'none';
-                customTypeInput.value = ''; // clear input if hidden
+                if (customTypeInput) {
+                    customTypeInput.value = ''; // clear input if hidden
+                }
             }
         }
         
