@@ -133,9 +133,22 @@ class DashboardController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Read unmapped description field to populate JSON attributes
+            // Read customType if filled to override standard type choices
+            $customType = $form->get('media')->get('customType')->getData();
+            if (!empty($customType)) {
+                $customMedia->setType($customType);
+            }
+
+            // Read unmapped fields to populate JSON attributes
             $description = $form->get('media')->get('description')->getData();
-            $customMedia->setAttributes(['description' => $description]);
+            $valuation = $form->get('valuation')->getData();
+            $valuationDate = $form->get('valuationDate')->getData();
+
+            $customMedia->setAttributes([
+                'description' => $description,
+                'valuation' => $valuation,
+                'valuationDate' => $valuationDate ? $valuationDate->format('Y-m-d') : null,
+            ]);
 
             // Handle image upload
             $imageFile = $form->get('image')->getData();

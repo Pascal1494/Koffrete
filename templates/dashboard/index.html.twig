@@ -231,6 +231,18 @@
                                     <span class="font-semibold text-gray-500">Note :</span> {{ item.personalNotes }}
                                 </div>
                             {% endif %}
+
+                            {% if item.media.attributes is defined and item.media.attributes and item.media.attributes.valuation is defined and item.media.attributes.valuation %}
+                                <div class="text-xs text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 flex items-center justify-between font-medium">
+                                    <span>✨ Côte d'expertise :</span>
+                                    <span class="font-bold">{{ item.media.attributes.valuation|number_format(0, ',', ' ') }} €</span>
+                                </div>
+                                {% if item.media.attributes.valuationDate is defined and item.media.attributes.valuationDate %}
+                                    <div class="text-[10px] text-gray-400 text-right italic -mt-1">
+                                        expertisé le {{ item.media.attributes.valuationDate|date('d/m/Y') }}
+                                    </div>
+                                {% endif %}
+                            {% endif %}
                         </div>
                     </div>
                     

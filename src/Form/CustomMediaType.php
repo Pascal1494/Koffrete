@@ -40,10 +40,21 @@ class CustomMediaType extends AbstractType
                     '🎲 Jeu de Société' => 'Jeu de société',
                     '🎮 Jeu Vidéo' => 'Jeu vidéo',
                     '📼 K7 Vidéo / VHS' => 'K7 Vidéo',
-                    '📻 Autre Collection / Média' => 'Autre',
+                    '📻 Autre Collection / Thème personnalisé' => 'Autre',
                 ],
                 'attr' => [
+                    'id' => 'custom_media_type_select',
                     'class' => 'appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+                ],
+                'label_attr' => ['class' => 'block text-sm font-medium text-gray-700 mt-4'],
+            ])
+            ->add('customType', TextType::class, [
+                'label' => 'Nom personnalisé de votre collection (Saisir si vous avez choisi "Autre" ci-dessus)',
+                'required' => false,
+                'mapped' => false, // Handled manually in the controller
+                'attr' => [
+                    'class' => 'appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                    'placeholder' => 'ex: Dés à coudre, Vaches en porcelaine, Timbres...'
                 ],
                 'label_attr' => ['class' => 'block text-sm font-medium text-gray-700 mt-4'],
             ])

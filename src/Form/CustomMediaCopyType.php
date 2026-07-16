@@ -5,7 +5,9 @@ namespace App\Form;
 use App\Entity\UserItem;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -59,6 +61,26 @@ class CustomMediaCopyType extends AbstractType
                         'mimeTypesMessage' => 'Veuillez téléverser un format valide (JPG, PNG, WEBP).',
                     ])
                 ],
+                'attr' => [
+                    'class' => 'appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+                ],
+                'label_attr' => ['class' => 'block text-sm font-medium text-gray-700 mt-4'],
+            ])
+            ->add('valuation', IntegerType::class, [
+                'label' => 'Valeur estimée / Côte d\'expertise (en €, Optionnel)',
+                'required' => false,
+                'mapped' => false, // Handled manually in the controller JSON
+                'attr' => [
+                    'class' => 'appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                    'placeholder' => 'ex: 25000'
+                ],
+                'label_attr' => ['class' => 'block text-sm font-medium text-gray-700 mt-4'],
+            ])
+            ->add('valuationDate', DateType::class, [
+                'label' => 'Date de l\'expertise / estimation (Optionnel)',
+                'required' => false,
+                'mapped' => false, // Handled manually in the controller JSON
+                'widget' => 'single_text',
                 'attr' => [
                     'class' => 'appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
                 ],
