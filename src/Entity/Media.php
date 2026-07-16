@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\DiscriminatorMap([
     'book' => Book::class,
     'dvd' => Dvd::class,
+    'custom_media' => CustomMedia::class,
 ])]
 abstract class Media
 {

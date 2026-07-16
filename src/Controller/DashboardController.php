@@ -3,11 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\Book;
+use App\Entity\CustomMedia;
 use App\Entity\Dvd;
+use App\Entity\Loan;
 use App\Entity\User;
 use App\Entity\UserItem;
 use App\Form\BookCopyType;
+use App\Form\CustomMediaCopyType;
 use App\Form\DvdCopyType;
+use App\Form\UserItemEditType;
 use App\Repository\SubscriptionRepository;
 use App\Repository\UserItemRepository;
 use App\Service\MediaQuotaService;
@@ -107,6 +111,188 @@ class DashboardController extends AbstractController
             'title' => 'Ajouter un DVD',
             'type' => 'dvd'
         ]);
+    }
+
+    #[Route('/add-custom', name: 'app_dashboard_add_custom')]
+    public function addCustom(
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): Response {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $userItem = new UserItem();
+        $userItem->setUser($user);
+        
+        $customMedia = new CustomMedia();
+        $userItem->setMedia($customMedia);
+
+        $form = $this->createForm(CustomMediaCopyType::class, $userItem);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Read unmapped description field to populate JSON attributes
+            $description = $form->get('media')->get('description')->getData();
+            $customMedia->setAttributes(['description' => $description]);
+
+            $entityManager->persist($customMedia);
+            $entityManager->persist($userItem);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Média personnalisé ajouté avec succès !');
+
+            return $this->redirectToRoute('app_dashboard');
+        }
+
+        return $this->render('dashboard/add_item.html.twig', [
+            'form' => $form->createView(),
+            'title' => 'Ajouter un Autre Média',
+            'type' => 'custom'
+        ]);
+    }
+
+    #[Route('/edit/{id}', name: 'app_dashboard_edit')]
+    public function edit(
+        int $id,
+        Request $request,
+        UserItemRepository $userItemRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $userItem = $userItemRepository->findOneBy(['id' => $id, 'user' => $user]);
+
+        if (!$userItem) {
+            $this->addFlash('error', 'Exemplaire introuvable.');
+            return $this->redirectToRoute('app_dashboard');
+        }
+
+        $form = $this->createForm(UserItemEditType::class, $userItem);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Détails de votre exemplaire mis à jour !');
+
+            return $this->redirectToRoute('app_dashboard');
+        }
+
+        return $this->render('dashboard/edit_item.html.twig', [
+            'form' => $form->createView(),
+            'item' => $userItem,
+        ]);
+    }
+
+    #[Route('/delete/{id}', name: 'app_dashboard_delete', methods: ['GET', 'POST'])]
+    public function delete(
+        int $id,
+        UserItemRepository $userItemRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $userItem = $userItemRepository->findOneBy(['id' => $id, 'user' => $user]);
+
+        if (!$userItem) {
+            $this->addFlash('error', 'Exemplaire introuvable.');
+            return $this->redirectToRoute('app_dashboard');
+        }
+
+        $entityManager->remove($userItem);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Exemplaire retiré de votre collection avec succès.');
+
+        return $this->redirectToRoute('app_dashboard');
+    }
+
+    #[Route('/lend/{id}', name: 'app_dashboard_lend', methods: ['GET', 'POST'])]
+    public function lend(
+        int $id,
+        Request $request,
+        UserItemRepository $userItemRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $userItem = $userItemRepository->findOneBy(['id' => $id, 'user' => $user]);
+
+        if (!$userItem) {
+            $this->addFlash('error', 'Exemplaire introuvable.');
+            return $this->redirectToRoute('app_dashboard');
+        }
+
+        // Verify if currently lent
+        foreach ($userItem->getLoans() as $loan) {
+            if ($loan->getReturnedAt() === null) {
+                $this->addFlash('error', 'Cet exemplaire est déjà prêté !');
+                return $this->redirectToRoute('app_dashboard');
+            }
+        }
+
+        if ($request->isMethod('POST')) {
+            $borrower = $request->request->get('borrower', '');
+            if (empty($borrower)) {
+                $this->addFlash('error', 'Veuillez renseigner le nom de l\'emprunteur.');
+            } else {
+                $loan = new Loan();
+                $loan->setBorrower($borrower);
+                $loan->setUserItem($userItem);
+                $loan->setExpectedReturnAt(new \DateTimeImmutable('+14 days'));
+
+                $entityManager->persist($loan);
+                $entityManager->flush();
+
+                $this->addFlash('success', sprintf('Exemplaire prêté avec succès à %s !', $borrower));
+
+                return $this->redirectToRoute('app_dashboard');
+            }
+        }
+
+        return $this->render('dashboard/lend_item.html.twig', [
+            'item' => $userItem,
+        ]);
+    }
+
+    #[Route('/return/{id}', name: 'app_dashboard_return')]
+    public function returnItem(
+        int $id,
+        UserItemRepository $userItemRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $userItem = $userItemRepository->findOneBy(['id' => $id, 'user' => $user]);
+
+        if (!$userItem) {
+            $this->addFlash('error', 'Exemplaire introuvable.');
+            return $this->redirectToRoute('app_dashboard');
+        }
+
+        $activeLoan = null;
+        foreach ($userItem->getLoans() as $loan) {
+            if ($loan->getReturnedAt() === null) {
+                $activeLoan = $loan;
+                break;
+            }
+        }
+
+        if (!$activeLoan) {
+            $this->addFlash('error', 'Cet exemplaire n\'est pas marqué comme prêté.');
+            return $this->redirectToRoute('app_dashboard');
+        }
+
+        $activeLoan->setReturnedAt(new \DateTimeImmutable());
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Le retour de l\'exemplaire a été enregistré !');
+
+        return $this->redirectToRoute('app_dashboard');
     }
 
     #[Route('/subscription', name: 'app_dashboard_subscription')]

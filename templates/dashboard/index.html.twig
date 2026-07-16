@@ -26,6 +26,18 @@
 </nav>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Flash Messages -->
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="mb-6 p-4 rounded-lg shadow-sm border {% if label == 'success' %}bg-green-50 border-green-200 text-green-800{% else %}bg-red-50 border-red-200 text-red-800{% endif %} flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <span>{% if label == 'success' %}✅{% else %}❌{% endif %}</span>
+                    <p class="text-sm font-medium">{{ message }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
     <!-- Quota & Subscription Banner -->
     <div class="bg-white rounded-lg shadow p-6 mb-8 border border-gray-100">
         <div class="md:flex md:items-center md:justify-between">
@@ -81,14 +93,17 @@
     </div>
 
     <!-- Collection Section -->
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 space-y-4 sm:space-y-0">
         <h3 class="text-xl font-bold text-gray-900">Ma Bibliothèque (<span id="visible_count">{{ items|length }}</span>/{{ items|length }} exemplaires)</h3>
-        <div class="flex space-x-2">
-            <a href="{{ path('app_dashboard_add_book') }}" class="inline-flex items-center px-3 py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
-                📖 Ajouter un Livre
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ path('app_dashboard_add_book') }}" class="inline-flex items-center px-3 py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+                📖 Livre
             </a>
-            <a href="{{ path('app_dashboard_add_dvd') }}" class="inline-flex items-center px-3 py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none">
-                🎬 Ajouter un DVD
+            <a href="{{ path('app_dashboard_add_dvd') }}" class="inline-flex items-center px-3 py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700">
+                🎬 DVD / Film
+            </a>
+            <a href="{{ path('app_dashboard_add_custom') }}" class="inline-flex items-center px-3 py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700">
+                ➕ Autre Média (CD, Vinyle, Jeu...)
             </a>
         </div>
     </div>
@@ -97,13 +112,16 @@
         <div class="text-center bg-white rounded-lg shadow py-12 px-4 border border-dashed border-gray-300">
             <span class="text-4xl">📚</span>
             <h4 class="mt-4 text-lg font-medium text-gray-900">Votre collection est vide</h4>
-            <p class="mt-1 text-sm text-gray-500">Commencez à inventorier vos livres, disques et films dès maintenant.</p>
-            <div class="mt-6 flex justify-center space-x-4">
+            <p class="mt-1 text-sm text-gray-500">Commencez à inventorier vos livres, disques, films et jeux de société dès maintenant.</p>
+            <div class="mt-6 flex flex-wrap justify-center gap-3">
                 <a href="{{ path('app_dashboard_add_book') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
-                    📖 Ajouter mon 1er Livre
+                    📖 Ajouter un Livre
                 </a>
                 <a href="{{ path('app_dashboard_add_dvd') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700">
-                    🎬 Ajouter mon 1er DVD
+                    🎬 Ajouter un DVD
+                </a>
+                <a href="{{ path('app_dashboard_add_custom') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700">
+                    ➕ Autre Média (Jeux, CD, Vinyle...)
                 </a>
             </div>
         </div>
@@ -120,10 +138,19 @@
                 {% set author_search = item.media.author is defined ? item.media.author : '' %}
                 {% set director_search = item.media.director is defined ? item.media.director : '' %}
                 {% set year_search = item.media.releaseYear is defined ? item.media.releaseYear : '' %}
+                {% set custom_type_search = item.media.type is defined ? item.media.type : '' %}
+                {% set custom_desc_search = (item.media.type is defined and item.media.attributes and item.media.attributes.description is defined) ? item.media.attributes.description : '' %}
+                
+                {% set active_loan = null %}
+                {% for loan in item.loans %}
+                    {% if loan.returnedAt is null %}
+                        {% set active_loan = loan %}
+                    {% endif %}
+                {% endfor %}
                 
                 <!-- Compiled lowercase metadata string for client-side search -->
                 <div class="media-card bg-white overflow-hidden shadow rounded-lg border border-gray-150 flex flex-col justify-between"
-                     data-search="{{ (item.media.title ~ ' ' ~ author_search ~ ' ' ~ director_search ~ ' ' ~ actors_search ~ ' ' ~ year_search ~ ' ' ~ item.condition ~ ' ' ~ item.personalNotes)|lower }}">
+                     data-search="{{ (item.media.title ~ ' ' ~ author_search ~ ' ' ~ director_search ~ ' ' ~ actors_search ~ ' ' ~ year_search ~ ' ' ~ custom_type_search ~ ' ' ~ custom_desc_search ~ ' ' ~ item.condition ~ ' ' ~ item.personalNotes ~ (active_loan ? ' prêté lent ' ~ active_loan.borrower : ''))|lower }}">
                     <div class="p-5">
                         <div class="flex items-start justify-between">
                             <div class="flex-1">
@@ -131,20 +158,29 @@
                                     {% if item.media.author is defined %}
                                         <span class="text-2xl" title="Livre">📖</span>
                                         <span class="text-xs font-semibold uppercase text-blue-600 tracking-wider">Livre</span>
-                                    {% else %}
+                                    {% elseif item.media.director is defined %}
                                         <span class="text-2xl" title="DVD">🎬</span>
                                         <span class="text-xs font-semibold uppercase text-red-600 tracking-wider">DVD / Film</span>
+                                    {% else %}
+                                        <span class="text-2xl" title="Autre Média">📦</span>
+                                        <span class="text-xs font-semibold uppercase text-purple-600 tracking-wider">{{ item.media.type }}</span>
+                                    {% endif %}
+
+                                    {% if active_loan %}
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                                            🤝 Prêt : {{ active_loan.borrower }}
+                                        </span>
                                     {% endif %}
                                 </div>
                                 <h4 class="text-lg font-bold text-gray-900 mt-2">{{ item.media.title }}</h4>
                                 
                                 {% if item.media.author is defined %}
-                                    <p class="text-sm text-gray-600 font-medium">Auteur : <span class="highlight-target font-bold text-indigo-700">{{ item.media.author }}</span></p>
+                                    <p class="text-sm text-gray-600 font-medium">Auteur : <span class="highlight-target">{{ item.media.author }}</span></p>
                                     {% if item.media.isbn %}
                                         <p class="text-xs text-gray-400 font-mono mt-0.5">ISBN : {{ item.media.isbn }}</p>
                                     {% endif %}
-                                {% else %}
-                                    <p class="text-sm text-gray-600 font-medium">Réalisateur : <span class="highlight-target font-bold text-indigo-700">{{ item.media.director ?: 'Inconnu' }}</span></p>
+                                {% elseif item.media.director is defined %}
+                                    <p class="text-sm text-gray-600 font-medium">Réalisateur : <span class="highlight-target">{{ item.media.director ?: 'Inconnu' }}</span></p>
                                     <div class="flex space-x-2 text-xs text-gray-400 font-medium mt-0.5">
                                         <span>Année : {{ item.media.releaseYear ?: 'Inconnue' }}</span>
                                         <span>•</span>
@@ -152,8 +188,13 @@
                                     </div>
                                     {% if item.media.actors %}
                                         <p class="text-xs text-gray-500 mt-2 italic line-clamp-1">
-                                            Acteurs : <span class="highlight-target font-bold text-indigo-700">{{ item.media.actors|join(', ') }}</span>
+                                            Acteurs : <span class="highlight-target">{{ item.media.actors|join(', ') }}</span>
                                         </p>
+                                    {% endif %}
+                                {% else %}
+                                    <!-- Custom / Other categories -->
+                                    {% if item.media.attributes and item.media.attributes.description is defined and item.media.attributes.description %}
+                                        <p class="text-xs text-gray-500 mt-1 bg-gray-50 p-2 rounded border border-gray-100 whitespace-pre-line">{{ item.media.attributes.description }}</p>
                                     {% endif %}
                                 {% endif %}
                             </div>
@@ -174,12 +215,30 @@
                             {% endif %}
                         </div>
                     </div>
-                    <div class="bg-gray-50 px-5 py-3 border-t border-gray-100 flex items-center justify-between text-xs">
+                    
+                    <!-- Action Buttons footer of card -->
+                    <div class="bg-gray-50 px-5 py-3 border-t border-gray-100 flex items-center justify-between text-xs gap-4">
                         <span class="text-gray-400">Acquis le {{ item.acquiredAt|date('d/m/Y') }}</span>
-                        <div class="flex space-x-2">
-                            <button class="text-indigo-600 hover:text-indigo-900 font-semibold">Modifier</button>
-                            <span class="text-gray-300">|</span>
-                            <button class="text-red-600 hover:text-red-900 font-semibold">Prêter</button>
+                        <div class="flex items-center space-x-3">
+                            <a href="{{ path('app_dashboard_edit', {'id': item.id}) }}" class="text-indigo-600 hover:text-indigo-900 font-semibold transition">
+                                Modifier
+                            </a>
+                            <span class="text-gray-200">|</span>
+                            
+                            {% if active_loan %}
+                                <a href="{{ path('app_dashboard_return', {'id': item.id}) }}" class="text-green-600 hover:text-green-900 font-semibold transition" title="Enregistrer le retour du prêt">
+                                    Retourner
+                                </a>
+                            {% else %}
+                                <a href="{{ path('app_dashboard_lend', {'id': item.id}) }}" class="text-amber-600 hover:text-amber-900 font-semibold transition">
+                                    Prêter
+                                </a>
+                            {% endif %}
+                            <span class="text-gray-200">|</span>
+
+                            <a href="{{ path('app_dashboard_delete', {'id': item.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir retirer cet exemplaire de votre collection ? (Cette action est irréversible)');" class="text-red-500 hover:text-red-700 font-semibold transition" title="Supprimer de la collection">
+                                🗑️ Retirer
+                            </a>
                         </div>
                     </div>
                 </div>
