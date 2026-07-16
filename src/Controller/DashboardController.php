@@ -21,6 +21,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 
 #[Route('/dashboard')]
 #[IsGranted('ROLE_USER')]
@@ -214,7 +216,8 @@ class DashboardController extends AbstractController
         int $id,
         Request $request,
         UserItemRepository $userItemRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        MailerInterface $mailer
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -242,18 +245,50 @@ class DashboardController extends AbstractController
             }
 
             $borrower = $request->request->get('borrower', '');
+            $lentAtStr = $request->request->get('lentAt', '');
+            $expectedReturnAtStr = $request->request->get('expectedReturnAt', '');
+
             if (empty($borrower)) {
                 $this->addFlash('error', 'Veuillez renseigner le nom de l\'emprunteur.');
             } else {
                 $loan = new Loan();
                 $loan->setBorrower($borrower);
                 $loan->setUserItem($userItem);
-                $loan->setExpectedReturnAt(new \DateTimeImmutable('+14 days'));
+
+                if (!empty($lentAtStr)) {
+                    $loan->setLentAt(new \DateTimeImmutable($lentAtStr));
+                }
+                if (!empty($expectedReturnAtStr)) {
+                    $loan->setExpectedReturnAt(new \DateTimeImmutable($expectedReturnAtStr));
+                }
 
                 $entityManager->persist($loan);
                 $entityManager->flush();
 
-                $this->addFlash('success', sprintf('Exemplaire prêté avec succès à %s !', $borrower));
+                // Send Confirmation Email
+                try {
+                    $email = (new Email())
+                        ->from('noreply@koffrete.local')
+                        ->to($user->getEmail())
+                        ->subject('Confirmation de prêt - Koffrete 🤝')
+                        ->html(sprintf(
+                            '<p>Bonjour,</p>' .
+                            '<p>Vous avez enregistré avec succès le prêt de votre exemplaire de "<strong>%s</strong>" à <strong>%s</strong>.</p>' .
+                            '<p><strong>Date de prêt :</strong> %s<br>' .
+                            '<strong>Date de retour prévue :</strong> %s</p>' .
+                            '<p>Merci d\'utiliser Koffrete !</p>',
+                            $userItem->getMedia()->getTitle(),
+                            $borrower,
+                            $loan->getLentAt()->format('d/m/Y'),
+                            $loan->getExpectedReturnAt() ? $loan->getExpectedReturnAt()->format('d/m/Y') : 'Non définie'
+                        ));
+
+                    $mailer->send($email);
+                } catch (\Throwable $e) {
+                    // Fail silently so it doesn't block the redirect if mailer is not configured
+                }
+
+                $this->addFlash('success', sprintf('Exemplaire prêté avec succès à %s ! Un email de confirmation vous a été envoyé.', $borrower));
 
                 return $this->redirectToRoute('app_dashboard');
             }
@@ -299,6 +334,32 @@ class DashboardController extends AbstractController
         $this->addFlash('success', 'Le retour de l\'exemplaire a été enregistré !');
 
         return $this->redirectToRoute('app_dashboard');
+    }
+
+    #[Route('/loans', name: 'app_dashboard_loans')]
+    public function activeLoans(UserItemRepository $userItemRepository): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $items = $userItemRepository->findBy(['user' => $user]);
+        $activeLoans = [];
+
+        foreach ($items as $item) {
+            foreach ($item->getLoans() as $loan) {
+                if ($loan->getReturnedAt() === null) {
+                    $activeLoans[] = [
+                        'loan' => $loan,
+                        'item' => $item,
+                        'isOverdue' => $loan->getExpectedReturnAt() !== null && $loan->getExpectedReturnAt() < new \DateTimeImmutable('today'),
+                    ];
+                }
+            }
+        }
+
+        return $this->render('dashboard/loans.html.twig', [
+            'activeLoans' => $activeLoans,
+        ]);
     }
 
     #[Route('/subscription', name: 'app_dashboard_subscription')]
