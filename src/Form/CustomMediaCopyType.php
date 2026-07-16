@@ -50,16 +50,16 @@ class CustomMediaCopyType extends AbstractType
                 'mapped' => false,
                 'required' => false,
                 'constraints' => [
-                    new File([
-                        'maxSize' => '5M',
-                        'maxSizeMessage' => 'La photo ne doit pas dépasser 5 Mo.',
-                        'mimeTypes' => [
+                    new File(
+                        maxSize: '5M',
+                        maxSizeMessage: 'La photo ne doit pas dépasser 5 Mo.',
+                        mimeTypes: [
                             'image/jpeg',
                             'image/png',
                             'image/webp',
                         ],
-                        'mimeTypesMessage' => 'Veuillez téléverser un format valide (JPG, PNG, WEBP).',
-                    ])
+                        mimeTypesMessage: 'Veuillez téléverser un format valide (JPG, PNG, WEBP).'
+                    )
                 ],
                 'attr' => [
                     'class' => 'appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
