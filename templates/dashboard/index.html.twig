@@ -28,7 +28,7 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Flash Messages -->
     {% for label, messages in app.flashes %}
-        {% for message in messages|unique %}
+        {% for message in messages %}
             <div class="mb-6 p-4 rounded-lg shadow-sm border {% if label == 'success' %}bg-green-50 border-green-200 text-green-800{% else %}bg-red-50 border-red-200 text-red-800{% endif %} flex items-center justify-between">
                 <div class="flex items-center space-x-2">
                     <span>{% if label == 'success' %}✅{% else %}❌{% endif %}</span>
