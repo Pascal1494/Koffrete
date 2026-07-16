@@ -137,6 +137,21 @@ class DashboardController extends AbstractController
             $description = $form->get('media')->get('description')->getData();
             $customMedia->setAttributes(['description' => $description]);
 
+            // Handle image upload
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                $newFilename = uniqid('item-', true) . '.' . $imageFile->guessExtension();
+                try {
+                    $imageFile->move(
+                        $this->getParameter('kernel.project_dir') . '/public/uploads/items',
+                        $newFilename
+                    );
+                    $userItem->setImagePath('uploads/items/' . $newFilename);
+                } catch (\Throwable $e) {
+                    // Fail silently or handle upload error
+                }
+            }
+
             $entityManager->persist($customMedia);
             $entityManager->persist($userItem);
             $entityManager->flush();

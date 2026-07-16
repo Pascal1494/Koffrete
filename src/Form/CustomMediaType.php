@@ -17,27 +17,30 @@ class CustomMediaType extends AbstractType
     {
         $builder
             ->add('title', TextType::class, [
-                'label' => 'Titre de l\'œuvre',
+                'label' => 'Nom de l\'objet / bolide',
                 'attr' => [
                     'class' => 'appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
-                    'placeholder' => 'ex: Abbey Road, PS5 FIFA 24, Monopoly...'
+                    'placeholder' => 'ex: Ford Mustang 1967, Carburateur Weber, Flipper Addams Family...'
                 ],
                 'label_attr' => ['class' => 'block text-sm font-medium text-gray-700'],
                 'constraints' => [
-                    new NotBlank(message: 'Veuillez renseigner le titre.'),
+                    new NotBlank(message: 'Veuillez renseigner un titre.'),
                 ],
             ])
             ->add('type', ChoiceType::class, [
-                'label' => 'Type de média',
+                'label' => 'Catégorie de la collection',
                 'choices' => [
-                    'Disque Vinyle' => 'Vinyle',
-                    'CD / Disque Compact' => 'CD',
-                    'Jeu de Société' => 'Jeu de société',
-                    'Jeu Vidéo' => 'Jeu vidéo',
-                    'K7 Audio / Cassette' => 'K7 Audio',
-                    'K7 Vidéo / VHS' => 'K7 Vidéo',
-                    'Blu-ray' => 'Blu-ray',
-                    'Collection Personnalisée / Autre' => 'Autre',
+                    '🚗 Voiture de Collection' => 'Voiture',
+                    '🏍️ Moto de Collection' => 'Moto',
+                    '⚙️ Pièce Détachée' => 'Pièce détachée',
+                    '👾 Flipper Rétro' => 'Flipper',
+                    '📻 Juke-box Rétro' => 'Juke-box',
+                    '💿 Disque Vinyle' => 'Vinyle',
+                    '💿 CD / Disque Compact' => 'CD',
+                    '🎲 Jeu de Société' => 'Jeu de société',
+                    '🎮 Jeu Vidéo' => 'Jeu vidéo',
+                    '📼 K7 Vidéo / VHS' => 'K7 Vidéo',
+                    '📻 Autre Collection / Média' => 'Autre',
                 ],
                 'attr' => [
                     'class' => 'appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
@@ -45,13 +48,13 @@ class CustomMediaType extends AbstractType
                 'label_attr' => ['class' => 'block text-sm font-medium text-gray-700 mt-4'],
             ])
             ->add('description', TextareaType::class, [
-                'label' => 'Caractéristiques spécifiques (Morceaux, Plateforme, Nb joueurs...)',
+                'label' => 'Détails, caractéristiques, lieu de stockage (ex: Caisse 3 Étagère C)',
                 'required' => false,
-                'mapped' => false, // We will manually map this to the attributes JSON array
+                'mapped' => false, // Manually map to JSON attributes
                 'attr' => [
                     'class' => 'appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
-                    'placeholder' => 'ex: Console: PS5, Joueurs: 2-6, Tracklist: ...',
-                    'rows' => 3
+                    'placeholder' => "ex:\n- Stockage : Caisse 3 Étagère C\n- Prix d'achat : 150 €\n- Constructeur/Marque : Bally / Ford\n- État : Restauré",
+                    'rows' => 4
                 ],
                 'label_attr' => ['class' => 'block text-sm font-medium text-gray-700 mt-4'],
             ])

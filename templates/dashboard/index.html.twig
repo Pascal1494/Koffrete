@@ -91,7 +91,7 @@
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span class="text-gray-400 text-lg">🔍</span>
             </div>
-            <input type="text" id="universal_search" placeholder="Rechercher par titre, auteur, réalisateur, acteur principal, année, état..." class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-3 py-3 border-gray-300 rounded-md text-sm text-gray-900 placeholder-gray-400 bg-gray-50">
+            <input type="text" id="universal_search" placeholder="Rechercher par titre, auteur, réalisateur, acteur principal, année, état, lieu de stockage (ex: Caisse 3)..." class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-3 py-3 border-gray-300 rounded-md text-sm text-gray-900 placeholder-gray-400 bg-gray-50">
         </div>
     </div>
 
@@ -106,7 +106,7 @@
                 🎬 DVD / Film
             </a>
             <a href="{{ path('app_dashboard_add_custom') }}" class="inline-flex items-center px-3 py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700">
-                ➕ Autre Média (CD, Vinyle, Jeu...)
+                ➕ Autre Collection (CD, Vinyle, Bolide, Pièce...)
             </a>
         </div>
     </div>
@@ -115,7 +115,7 @@
         <div class="text-center bg-white rounded-lg shadow py-12 px-4 border border-dashed border-gray-300">
             <span class="text-4xl">📚</span>
             <h4 class="mt-4 text-lg font-medium text-gray-900">Votre collection est vide</h4>
-            <p class="mt-1 text-sm text-gray-500">Commencez à inventorier vos livres, disques, films et jeux de société dès maintenant.</p>
+            <p class="mt-1 text-sm text-gray-500">Commencez à inventorier vos livres, bolides, flippers, pièces et médias dès maintenant.</p>
             <div class="mt-6 flex flex-wrap justify-center gap-3">
                 <a href="{{ path('app_dashboard_add_book') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
                     📖 Ajouter un Livre
@@ -124,7 +124,7 @@
                     🎬 Ajouter un DVD
                 </a>
                 <a href="{{ path('app_dashboard_add_custom') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700">
-                    ➕ Autre Média (Jeux, CD, Vinyle...)
+                    ➕ Autre Collection (Bolide, Flipper, Pièce...)
                 </a>
             </div>
         </div>
@@ -154,6 +154,13 @@
                 <!-- Compiled lowercase metadata string for client-side search -->
                 <div class="media-card bg-white overflow-hidden shadow rounded-lg border border-gray-150 flex flex-col justify-between"
                      data-search="{{ (item.media.title ~ ' ' ~ author_search ~ ' ' ~ director_search ~ ' ' ~ actors_search ~ ' ' ~ year_search ~ ' ' ~ custom_type_search ~ ' ' ~ custom_desc_search ~ ' ' ~ item.condition ~ ' ' ~ item.personalNotes ~ (active_loan ? ' prêté lent ' ~ active_loan.borrower : ''))|lower }}">
+                    
+                    {% if item.imagePath %}
+                        <div class="h-48 w-full overflow-hidden bg-gray-100 flex items-center justify-center border-b border-gray-100">
+                            <img src="{{ asset(item.imagePath) }}" alt="{{ item.media.title }}" class="object-cover w-full h-full">
+                        </div>
+                    {% endif %}
+
                     <div class="p-5">
                         <div class="flex items-start justify-between">
                             <div class="flex-1">
@@ -165,7 +172,15 @@
                                         <span class="text-2xl" title="DVD">🎬</span>
                                         <span class="text-xs font-semibold uppercase text-red-600 tracking-wider">DVD / Film</span>
                                     {% else %}
-                                        <span class="text-2xl" title="Autre Média">📦</span>
+                                        {% set category_emoji = '📦' %}
+                                        {% if item.media.type == 'Voiture' %}{% set category_emoji = '🚗' %}
+                                        {% elseif item.media.type == 'Moto' %}{% set category_emoji = '🏍️' %}
+                                        {% elseif item.media.type == 'Pièce détachée' %}{% set category_emoji = '⚙️' %}
+                                        {% elseif item.media.type == 'Flipper' %}{% set category_emoji = '👾' %}
+                                        {% elseif item.media.type == 'Juke-box' %}{% set category_emoji = '📻' %}
+                                        {% elseif item.media.type == 'Vinyle' %}{% set category_emoji = '💿' %}
+                                        {% endif %}
+                                        <span class="text-2xl" title="{{ item.media.type }}">{{ category_emoji }}</span>
                                         <span class="text-xs font-semibold uppercase text-purple-600 tracking-wider">{{ item.media.type }}</span>
                                     {% endif %}
 
@@ -197,7 +212,7 @@
                                 {% else %}
                                     <!-- Custom / Other categories -->
                                     {% if item.media.attributes and item.media.attributes.description is defined and item.media.attributes.description %}
-                                        <p class="text-xs text-gray-500 mt-1 bg-gray-50 p-2 rounded border border-gray-100 whitespace-pre-line">{{ item.media.attributes.description }}</p>
+                                        <p class="text-xs text-gray-600 mt-2 font-medium bg-gray-50 p-2.5 rounded border border-gray-150 whitespace-pre-line">{{ item.media.attributes.description }}</p>
                                     {% endif %}
                                 {% endif %}
                             </div>

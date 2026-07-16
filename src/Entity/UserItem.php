@@ -29,10 +29,13 @@ class UserItem
     private ?string $condition = null; // e.g. "Mint", "Very Good", "Good", "Poor"
 
     #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $personalNotes = null; // e.g. "German Edition", "Autographed"
+    private ?string $personalNotes = null; // e.g. "German Edition", "Autographed", "Caisse 3 Étagère C"
 
     #[ORM\Column]
     private ?\DateTimeImmutable $acquiredAt = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $imagePath = null; // Path to upload image (for Vehicles, Retro Gaming, etc.)
 
     /**
      * @var Collection<int, Loan>
@@ -107,6 +110,18 @@ class UserItem
     public function setAcquiredAt(\DateTimeImmutable $acquiredAt): static
     {
         $this->acquiredAt = $acquiredAt;
+
+        return $this;
+    }
+
+    public function getImagePath(): ?string
+    {
+        return $this->imagePath;
+    }
+
+    public function setImagePath(?string $imagePath): static
+    {
+        $this->imagePath = $imagePath;
 
         return $this;
     }
