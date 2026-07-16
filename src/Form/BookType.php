@@ -22,7 +22,7 @@ class BookType extends AbstractType
                 ],
                 'label_attr' => ['class' => 'block text-sm font-medium text-gray-700'],
                 'constraints' => [
-                    new NotBlank(['message' => 'Veuillez renseigner le titre.']),
+                    new NotBlank(message: 'Veuillez renseigner le titre.'),
                 ],
             ])
             ->add('author', TextType::class, [
@@ -33,7 +33,7 @@ class BookType extends AbstractType
                 ],
                 'label_attr' => ['class' => 'block text-sm font-medium text-gray-700'],
                 'constraints' => [
-                    new NotBlank(['message' => 'Veuillez renseigner l\'auteur.']),
+                    new NotBlank(message: 'Veuillez renseigner l\'auteur.'),
                 ],
             ])
             ->add('isbn', TextType::class, [
