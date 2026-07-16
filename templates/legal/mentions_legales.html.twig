@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mentions Légales - Koffrete{% endblock %}
+
+{% block body %}
+<div class="bg-gray-50 min-h-screen text-gray-900 font-sans antialiased">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <a href="{{ path('app_home') }}" class="flex items-center space-x-3 text-gray-900 font-bold hover:opacity-85 transition">
+                <span class="text-2xl">🗃️</span>
+                <span class="text-xl">Koffrete</span>
+            </a>
+            <a href="{{ path('app_home') }}" class="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition">
+                ← Retour au site
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-150 p-8 sm:p-12 space-y-8">
+            <div class="border-b border-gray-100 pb-6">
+                <h1 class="text-3xl font-extrabold text-gray-950">Mentions Légales</h1>
+                <p class="text-sm text-gray-500 mt-2">Conformément aux dispositions de l'article 6 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique (LCEN).</p>
+            </div>
+
+            <section class="space-y-4">
+                <h2 class="text-xl font-bold text-gray-900">1. Éditeur du site</h2>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    Le site internet <strong>Koffrete</strong> est édité par :
+                </p>
+                <ul class="list-disc pl-5 text-sm text-gray-600 space-y-1">
+                    <li><strong>Nom de l'éditeur</strong> : Pascal1494</li>
+                    <li><strong>Type d'édition</strong> : Éditeur individuel / Projet de collection</li>
+                    <li><strong>Adresse de courrier électronique</strong> : <a href="mailto:contact@koffrete.local" class="text-indigo-600 hover:underline">contact@koffrete.local</a></li>
+                    <li><strong>Directeur de la publication</strong> : Pascal1494</li>
+                </ul>
+            </section>
+
+            <section class="space-y-4">
+                <h2 class="text-xl font-bold text-gray-900">2. Hébergement du site</h2>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    Le présent site internet est hébergé localement sous environnement de développement Laragon, et publié de manière communautaire par :
+                </p>
+                <ul class="list-disc pl-5 text-sm text-gray-600 space-y-1">
+                    <li><strong>Hébergeur de code</strong> : GitHub, Inc.</li>
+                    <li><strong>Adresse de l'hébergeur</strong> : 88 Colin P Kelly Jr St, San Francisco, CA 94107, États-Unis</li>
+                    <li><strong>Site Internet de l'hébergeur</strong> : <a href="https://github.com" target="_blank" class="text-indigo-600 hover:underline">https://github.com</a></li>
+                </ul>
+            </section>
+
+            <section class="space-y-4">
+                <h2 class="text-xl font-bold text-gray-900">3. Propriété intellectuelle</h2>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    L'ensemble des contenus présents sur ce site (structure générale, textes, logos, designs, icônes, boutons, codes sources de l'application) est la propriété exclusive de l'éditeur Pascal1494, sauf mentions contraires ou éléments provenant d'APIs tierces libres de droits (comme Google Books ou TMDb).
+                </p>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    Toute reproduction, représentation, modification ou publication de tout ou partie des éléments du site, quel que soit le moyen ou le procédé utilisé, est strictement interdite sans l'autorisation écrite préalable de l'auteur.
+                </p>
+            </section>
+
+            <section class="space-y-4">
+                <h2 class="text-xl font-bold text-gray-900">4. Responsabilité</h2>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    L'éditeur s'efforce d'assurer au mieux l'exactitude des informations diffusées sur le site. Toutefois, Koffrete intègre des informations automatiques tierces (provenant d'APIs externes comme Google Books et TMDb). L'éditeur ne peut être tenu responsable en cas d'inexactitude, d'erreur ou d'omission dans ces fiches de catalogue externes.
+                </p>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-8 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs">
+            &copy; 2026 Koffrete App. Page de mentions légales d'édition.
+        </div>
+    </footer>
+</div>
+{% endblock %}
