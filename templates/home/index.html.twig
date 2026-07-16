@@ -1,0 +1,360 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Koffrete - Gérez votre collection de médias facilement{% endblock %}
+
+{% block body %}
+<div class="bg-white text-gray-900 font-sans antialiased">
+    <!-- Header/Navigation -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <span class="text-2xl">🗃️</span>
+                <span class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Koffrete</span>
+            </div>
+            <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-600">
+                <a href="#features" class="hover:text-indigo-600 transition">Fonctionnalités</a>
+                <a href="#how-it-works" class="hover:text-indigo-600 transition">Comment ça marche</a>
+                <a href="#pricing" class="hover:text-indigo-600 transition">Tarifs</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <a href="{{ path('app_login') }}" class="text-sm font-medium text-gray-700 hover:text-indigo-600 transition">Connexion</a>
+                <a href="{{ path('app_register') }}" class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm hover:shadow transition">Inscription</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative bg-gradient-to-b from-indigo-50/70 via-white to-white overflow-hidden py-20 lg:py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <!-- Left Content -->
+                <div class="lg:col-span-6 text-center lg:text-left space-y-6">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800">
+                        🚀 Nouvelle Version 2.0
+                    </span>
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-950 tracking-tight leading-none">
+                        Organisez votre <span class="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">bibliothèque de médias</span> en quelques clics.
+                    </h1>
+                    <p class="text-lg text-gray-600 max-w-xl mx-auto lg:mx-0">
+                        Livres, DVDs, Jeux, Vinyles... Gardez un œil sur votre collection complète. Auto-remplissez vos fiches via nos APIs partenaires, scannez vos codes-barres et gérez vos prêts facilement.
+                    </p>
+                    <div class="flex flex-col sm:flex-row justify-center lg:justify-start space-y-3 sm:space-y-0 sm:space-x-4">
+                        <a href="{{ path('app_register') }}" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 transition">
+                            Commencer gratuitement (10 médias)
+                        </a>
+                        <a href="#features" class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition">
+                            Découvrir les fonctionnalités
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Visual -->
+                <div class="lg:col-span-6 relative flex justify-center">
+                    <div class="relative w-full max-w-md sm:max-w-lg">
+                        <!-- Graphic elements representing database & collector cards -->
+                        <div class="absolute -top-4 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob"></div>
+                        <div class="absolute -bottom-10 -right-4 w-72 h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob animation-delay-2000"></div>
+                        <div class="relative bg-white border border-gray-150 rounded-2xl shadow-2xl p-6 space-y-6">
+                            <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+                                <span class="text-lg font-bold text-gray-800">📖 Ma Bibliothèque</span>
+                                <span class="text-xs bg-green-100 text-green-800 px-2.5 py-0.5 rounded-full font-semibold">Quota : 3 / 10</span>
+                            </div>
+                            <!-- Mock cards -->
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 bg-indigo-50/50 rounded-xl border border-indigo-100/50">
+                                    <div class="flex items-center space-x-3">
+                                        <span class="text-2xl">📖</span>
+                                        <div>
+                                            <h4 class="text-sm font-bold text-gray-900">The Hobbit</h4>
+                                            <p class="text-xs text-gray-500">J.R.R. Tolkien</p>
+                                        </div>
+                                    </div>
+                                    <span class="px-2 py-0.5 text-[10px] rounded-full font-semibold bg-green-100 text-green-800 border border-green-200">Mint</span>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-red-50/50 rounded-xl border border-red-100/50">
+                                    <div class="flex items-center space-x-3">
+                                        <span class="text-2xl">🎬</span>
+                                        <div>
+                                            <h4 class="text-sm font-bold text-gray-900">Inception</h4>
+                                            <p class="text-xs text-gray-500">Christopher Nolan</p>
+                                        </div>
+                                    </div>
+                                    <span class="px-2 py-0.5 text-[10px] rounded-full font-semibold bg-green-100 text-green-800 border border-green-200">Very Good</span>
+                                </div>
+                            </div>
+                            <!-- Mock instant search indicator -->
+                            <div class="pt-2 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
+                                <span>🔍 Filtrage instantané ultra-fluide</span>
+                                <span class="text-indigo-600 font-semibold">Koffrete App</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories / Features Showcase -->
+    <section id="features" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-950">
+                    Tous vos médias réunis au même endroit
+                </h2>
+                <p class="text-lg text-gray-600">
+                    Koffrete est conçu pour gérer n'importe quelle catégorie de médias. Ne laissez plus vos collections s'éparpiller.
+                </p>
+            </div>
+
+            <!-- Categories Badges -->
+            <div class="mt-8 flex flex-wrap justify-center gap-3">
+                {% set categories = ['Livres', 'DVDs', 'Disques Vinyles', 'Jeux de Société', 'Jeux Vidéo', 'Blu-ray', 'K7 Audio/Vidéo', 'Collections Personnalisées'] %}
+                {% for category in categories %}
+                    <span class="px-4 py-2 rounded-lg text-sm font-semibold bg-white border border-gray-200 text-gray-800 shadow-sm">
+                        {{ category }}
+                    </span>
+                {% endfor %}
+            </div>
+
+            <!-- Detailed Features Grid -->
+            <div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 space-y-4 hover:shadow-md transition">
+                    <span class="text-3xl">👥</span>
+                    <h3 class="text-xl font-bold text-gray-900">Séparation Édition / Exemplaire</h3>
+                    <p class="text-sm text-gray-600">
+                        Possédez plusieurs fois le même vinyle (Import US, réédition) ? Notre architecture intelligente gère séparément la fiche catalogue et vos exemplaires physiques avec leurs propres états d'usures et notes d'acquisition.
+                    </p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 space-y-4 hover:shadow-md transition">
+                    <span class="text-3xl">🔌</span>
+                    <h3 class="text-xl font-bold text-gray-900">Auto-complétion Intelligente</h3>
+                    <p class="text-sm text-gray-600">
+                        Saisissez un ISBN de livre ou un titre de film et regardez notre assistant pré-remplir l'ensemble de la fiche (Titre, Auteur, Acteurs, Synopsis, Durée, Année) en un éclair grâce aux APIs Google Books et TMDb.
+                    </p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 space-y-4 hover:shadow-md transition">
+                    <span class="text-3xl">🤝</span>
+                    <h3 class="text-xl font-bold text-gray-900">Gestion et Historique des Prêts</h3>
+                    <p class="text-sm text-gray-600">
+                        Prêtez vos livres ou DVDs à vos proches et suivez l'historique de chaque exemplaire. Notre système intègre des rappels automatiques pour ne plus jamais oublier à qui vous avez confié vos trésors.
+                    </p>
+                </div>
+                <!-- Feature 4 -->
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 space-y-4 hover:shadow-md transition">
+                    <span class="text-3xl">🔍</span>
+                    <h3 class="text-xl font-bold text-gray-900">Recherche Universelle</h3>
+                    <p class="text-sm text-gray-600">
+                        Recherchez instantanément par auteur, réalisateur, acteur principal, année, état d'usure ou notes personnelles. Notre filtre de recherche instantané s'exécute à la volée pour un confort inégalé.
+                    </p>
+                </div>
+                <!-- Feature 5 -->
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 space-y-4 hover:shadow-md transition">
+                    <span class="text-3xl">📱</span>
+                    <h3 class="text-xl font-bold text-gray-900">Scan Mobile Code-Barres</h3>
+                    <p class="text-sm text-gray-600">
+                        Ouvrez l'application sur votre smartphone et utilisez directement votre appareil photo pour scanner le code-barres de vos DVDs ou livres pour un inventaire ultra-rapide.
+                    </p>
+                </div>
+                <!-- Feature 6 -->
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 space-y-4 hover:shadow-md transition">
+                    <span class="text-3xl">📊</span>
+                    <h3 class="text-xl font-bold text-gray-900">Statistiques & Analyse</h3>
+                    <p class="text-sm text-gray-600">
+                        Visualisez de superbes graphiques sur la répartition de votre bibliothèque de médias (par genre, catégorie, valeur, ou date d'acquisition).
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section id="how-it-works" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-950">
+                    Comment ça marche ?
+                </h2>
+                <p class="text-lg text-gray-600">
+                    Découvrez en 4 étapes simples comment Koffrete révolutionne votre gestion de collection.
+                </p>
+            </div>
+
+            <div class="mt-16 grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+                <!-- Step 1 -->
+                <div class="text-center space-y-3">
+                    <div class="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 font-bold flex items-center justify-center mx-auto text-lg shadow-sm">
+                        1
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-900">Scannez ou Saisissez</h4>
+                    <p class="text-xs text-gray-500">Scannez le code-barres avec votre téléphone ou tapez l'identifiant / titre de votre œuvre.</p>
+                </div>
+                <!-- Step 2 -->
+                <div class="text-center space-y-3">
+                    <div class="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 font-bold flex items-center justify-center mx-auto text-lg shadow-sm">
+                        2
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-900">Auto-identifiez</h4>
+                    <p class="text-xs text-gray-500">L'assistant pré-remplit instantanément toutes les fiches d'édition complexes grâce à nos APIs.</p>
+                </div>
+                <!-- Step 3 -->
+                <div class="text-center space-y-3">
+                    <div class="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 font-bold flex items-center justify-center mx-auto text-lg shadow-sm">
+                        3
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-900">Personnalisez</h4>
+                    <p class="text-xs text-gray-500">Renseignez l'état d'usure de votre propre exemplaire physique, ajoutez vos notes et rangez-le dans votre Koffrete.</p>
+                </div>
+                <!-- Step 4 -->
+                <div class="text-center space-y-3">
+                    <div class="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 font-bold flex items-center justify-center mx-auto text-lg shadow-sm">
+                        4
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-900">Prêtez</h4>
+                    <p class="text-xs text-gray-500">Un ami emprunte un film ou livre ? Renseignez son nom et recevez des alertes de retour.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-950">
+                    Des tarifs clairs et transparents
+                </h2>
+                <p class="text-lg text-gray-600">
+                    Commencez gratuitement, puis faites évoluer votre abonnement selon la taille de votre collection.
+                </p>
+            </div>
+
+            <!-- Pricing Grid -->
+            <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch max-w-5xl mx-auto">
+                <!-- Tier 1: Free -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-250 p-8 flex flex-col justify-between hover:shadow-md transition">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Plan Freemium</h3>
+                        <p class="text-xs text-gray-500 mt-1">Idéal pour tester l'application</p>
+                        <div class="mt-4 flex items-baseline">
+                            <span class="text-4xl font-extrabold text-gray-950">0€</span>
+                            <span class="text-sm font-medium text-gray-500 ml-1">/ mois</span>
+                        </div>
+                        <ul class="mt-6 space-y-4 text-sm text-gray-600 border-t border-gray-100 pt-6">
+                            <li class="flex items-center space-x-2">
+                                <span class="text-green-500">✓</span>
+                                <span class="font-bold text-gray-900">Jusqu'à 10 médias au total</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="text-green-500">✓</span>
+                                <span>Toutes catégories de médias</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="text-green-500">✓</span>
+                                <span>Recherche et filtres</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="text-red-500">✗</span>
+                                <span class="text-gray-400">Rappels de prêts automatiques</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mt-8">
+                        <a href="{{ path('app_register') }}" class="w-full inline-flex items-center justify-center px-4 py-2.5 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition">
+                            S'inscrire gratuitement
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Tier 2: Standard (Highlighted) -->
+                <div class="bg-white rounded-2xl shadow-xl border-2 border-indigo-600 p-8 flex flex-col justify-between relative hover:shadow-2xl transition">
+                    <span class="absolute top-0 right-1/2 transform translate-x-1/2 -translate-y-1/2 bg-indigo-600 text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">
+                        Populaire
+                    </span>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Plan Standard</h3>
+                        <p class="text-xs text-gray-500 mt-1">Parfait pour la plupart des amateurs</p>
+                        <div class="mt-4 flex items-baseline">
+                            <span class="text-4xl font-extrabold text-gray-950">4,99€</span>
+                            <span class="text-sm font-medium text-gray-500 ml-1">/ mois</span>
+                        </div>
+                        <ul class="mt-6 space-y-4 text-sm text-gray-600 border-t border-gray-100 pt-6">
+                            <li class="flex items-center space-x-2">
+                                <span class="text-green-500">✓</span>
+                                <span class="font-bold text-gray-900">Jusqu'à 100 médias au total</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="text-green-500">✓</span>
+                                <span>Toutes catégories de médias</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="text-green-500">✓</span>
+                                <span>Auto-complétion API (Google/TMDb)</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="text-green-500">✓</span>
+                                <span>Rappels de prêts et suivi</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mt-8">
+                        <a href="{{ path('app_register') }}" class="w-full inline-flex items-center justify-center px-4 py-2.5 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition">
+                            Prendre l'abonnement Standard
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Tier 3: Premium -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-250 p-8 flex flex-col justify-between hover:shadow-md transition">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Plan Premium</h3>
+                        <p class="text-xs text-gray-500 mt-1">Destiné aux grands collectionneurs</p>
+                        <div class="mt-4 flex items-baseline">
+                            <span class="text-4xl font-extrabold text-gray-950">9,99€</span>
+                            <span class="text-sm font-medium text-gray-500 ml-1">/ mois</span>
+                        </div>
+                        <ul class="mt-6 space-y-4 text-sm text-gray-600 border-t border-gray-100 pt-6">
+                            <li class="flex items-center space-x-2">
+                                <span class="text-green-500">✓</span>
+                                <span class="font-bold text-indigo-700">MÉDIAS ILLIMITÉS ✨</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="text-green-500">✓</span>
+                                <span>Support prioritaire 24/7</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="text-green-500">✓</span>
+                                <span>Statistiques de collection complètes</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="text-green-500">✓</span>
+                                <span>Multi-comptes famille</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mt-8">
+                        <a href="{{ path('app_register') }}" class="w-full inline-flex items-center justify-center px-4 py-2.5 border border-gray-300 text-sm font-medium rounded-lg text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition">
+                            Devenir Premium maintenant
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-12 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between">
+            <div class="flex items-center space-x-3 mb-4 md:mb-0">
+                <span class="text-2xl">🗃️</span>
+                <span class="text-lg font-bold text-white">Koffrete</span>
+            </div>
+            <p class="text-sm text-gray-500">
+                &copy; 2026 Koffrete App. Tous droits réservés. Développé par un Architecte Symfony expert.
+            </p>
+        </div>
+    </footer>
+</div>
+{% endblock %}
