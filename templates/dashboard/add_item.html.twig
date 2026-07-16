@@ -120,9 +120,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusText = document.getElementById('api_status');
     
     function showStatus(text, isError = false) {
-        statusText.classList.remove('hidden', 'text-gray-500', 'text-green-600', 'text-red-600');
-        statusText.classList.add(isError ? 'text-red-600' : 'text-green-600');
-        statusText.textContent = text;
+        if (statusText) {
+            statusText.classList.remove('hidden', 'text-gray-500', 'text-green-600', 'text-red-600');
+            statusText.classList.add(isError ? 'text-red-600' : 'text-green-600');
+            statusText.textContent = text;
+        }
+    }
+
+    // Conditional Custom Type Visibility Logic
+    const selectElement = document.getElementById('custom_media_type_select');
+    const customTypeInput = document.querySelector('input[id$="_media_customType"]');
+    
+    if (selectElement && customTypeInput) {
+        const container = customTypeInput.closest('div');
+        
+        function toggleCustomType() {
+            if (selectElement.value === 'Autre') {
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+                customTypeInput.value = ''; // clear input if hidden
+            }
+        }
+        
+        // Listen for change events
+        selectElement.addEventListener('change', toggleCustomType);
+        
+        // Trigger initially
+        toggleCustomType();
     }
 
     {% if type == 'book' %}
