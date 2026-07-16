@@ -29,6 +29,7 @@
         </p>
 
         <form method="post" class="space-y-6">
+            <input type="hidden" name="_token" value="{{ csrf_token('submit') }}">
             <div>
                 <label for="borrower" class="block text-sm font-medium text-gray-700">
                     Nom de l'emprunteur

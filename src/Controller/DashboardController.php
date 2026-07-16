@@ -235,6 +235,12 @@ class DashboardController extends AbstractController
         }
 
         if ($request->isMethod('POST')) {
+            $submittedToken = $request->request->get('_token');
+            if (!$this->isCsrfTokenValid('submit', $submittedToken)) {
+                $this->addFlash('error', 'Jeton CSRF invalide.');
+                return $this->redirectToRoute('app_dashboard');
+            }
+
             $borrower = $request->request->get('borrower', '');
             if (empty($borrower)) {
                 $this->addFlash('error', 'Veuillez renseigner le nom de l\'emprunteur.');
