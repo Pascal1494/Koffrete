@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Entity\UserItem;
 use App\Form\BookCopyType;
 use App\Form\DvdCopyType;
+use App\Repository\SubscriptionRepository;
 use App\Repository\UserItemRepository;
 use App\Service\MediaQuotaService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -106,5 +107,60 @@ class DashboardController extends AbstractController
             'title' => 'Ajouter un DVD',
             'type' => 'dvd'
         ]);
+    }
+
+    #[Route('/subscription', name: 'app_dashboard_subscription')]
+    public function subscription(
+        SubscriptionRepository $subscriptionRepository,
+        MediaQuotaService $quotaService
+    ): Response {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $subscriptions = $subscriptionRepository->findAll();
+        $quotaStats = $quotaService->getQuotaStats($user);
+
+        return $this->render('dashboard/subscription.html.twig', [
+            'subscriptions' => $subscriptions,
+            'quota' => $quotaStats,
+        ]);
+    }
+
+    #[Route('/subscription/upgrade/{id}', name: 'app_dashboard_subscription_upgrade')]
+    public function upgrade(
+        int $id,
+        SubscriptionRepository $subscriptionRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $subscription = $subscriptionRepository->find($id);
+
+        if (!$subscription) {
+            $this->addFlash('error', 'Plan d\'abonnement introuvable.');
+            return $this->redirectToRoute('app_dashboard_subscription');
+        }
+
+        $user->setSubscription($subscription);
+        $entityManager->flush();
+
+        $this->addFlash('success', sprintf('Félicitations, vous êtes désormais membre %s ! Votre quota a été mis à jour.', $subscription->getName()));
+
+        return $this->redirectToRoute('app_dashboard');
+    }
+
+    #[Route('/subscription/downgrade-free', name: 'app_dashboard_subscription_free')]
+    public function downgradeFree(EntityManagerInterface $entityManager): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $user->setSubscription(null); // Back to free plan
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Votre abonnement payant a été résilié. Vous êtes repassé sur le Plan Freemium (Gratuit).');
+
+        return $this->redirectToRoute('app_dashboard');
     }
 }

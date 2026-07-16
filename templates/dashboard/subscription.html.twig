@@ -1,0 +1,138 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Abonnement - Koffrete{% endblock %}
+
+{% block body %}
+<nav class="bg-indigo-600 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+                <a href="{{ path('app_dashboard') }}" class="text-white text-xl font-bold hover:opacity-90 transition">Koffrete 🗃️</a>
+                <span class="text-indigo-200 text-sm ml-4 font-medium hidden sm:block">Espace Abonnement & Quotas</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="{{ path('app_dashboard') }}" class="text-indigo-100 hover:text-white text-sm font-medium">
+                    ← Retour au tableau de bord
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center max-w-3xl mx-auto space-y-4 mb-12">
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800">
+            🧪 Centre de Simulation & Gestion d'Abonnement
+        </span>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-950">
+            Gérez votre abonnement Koffrete
+        </h1>
+        <p class="text-lg text-gray-600">
+            Sélectionnez un plan ci-dessous pour modifier votre quota de médias en temps réel et tester le comportement de l'application.
+        </p>
+    </div>
+
+    <!-- Active Plan Status Banner -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-150 p-6 mb-12 flex flex-col sm:flex-row items-center justify-between">
+        <div class="flex items-center space-x-4 mb-4 sm:mb-0">
+            <span class="text-4xl">🏷️</span>
+            <div>
+                <h3 class="text-lg font-bold text-gray-900">Votre abonnement actuel</h3>
+                <p class="text-sm text-gray-500">Plan actif : <span class="font-semibold text-indigo-600">{{ quota.subscriptionName }}</span></p>
+            </div>
+        </div>
+        <div class="text-right">
+            <p class="text-sm text-gray-500">Médias utilisés :</p>
+            <p class="text-xl font-extrabold text-gray-900">{{ quota.current }} / {% if quota.limit is null %}∞ (Illimité){% else %}{{ quota.limit }}{% endif %}</p>
+        </div>
+    </div>
+
+    <!-- Subscription Plans Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+        <!-- Plan 1: Free (Default) -->
+        <div class="bg-white rounded-2xl shadow-sm border {% if app.user.subscription is null %}border-indigo-600 ring-2 ring-indigo-600{% else %}border-gray-200{% endif %} p-8 flex flex-col justify-between relative">
+            {% if app.user.subscription is null %}
+                <span class="absolute top-0 right-1/2 transform translate-x-1/2 -translate-y-1/2 bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full">Actif</span>
+            {% endif %}
+            <div>
+                <h3 class="text-xl font-bold text-gray-900">Plan Freemium</h3>
+                <p class="text-xs text-gray-500 mt-1">Plan de base gratuit</p>
+                <div class="mt-4 flex items-baseline">
+                    <span class="text-4xl font-extrabold text-gray-950">0€</span>
+                    <span class="text-sm font-medium text-gray-500 ml-1">/ mois</span>
+                </div>
+                <ul class="mt-6 space-y-4 text-sm text-gray-600 border-t border-gray-100 pt-6">
+                    <li class="flex items-center space-x-2">
+                        <span class="text-green-500">✓</span>
+                        <span class="font-bold text-gray-900">Jusqu'à 10 médias</span>
+                    </li>
+                    <li class="flex items-center space-x-2">
+                        <span class="text-green-500">✓</span>
+                        <span>Livres, DVDs et Vinyles</span>
+                    </li>
+                    <li class="flex items-center space-x-2">
+                        <span class="text-red-500">✗</span>
+                        <span class="text-gray-400">Rappels de prêts</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="mt-8">
+                {% if app.user.subscription is null %}
+                    <button disabled class="w-full inline-flex items-center justify-center px-4 py-2.5 border border-transparent text-sm font-medium rounded-lg text-green-800 bg-green-100 font-bold cursor-not-allowed">
+                        ✓ Plan Actif
+                    </button>
+                {% else %}
+                    <a href="{{ path('app_dashboard_subscription_free') }}" class="w-full inline-flex items-center justify-center px-4 py-2.5 border border-red-300 text-sm font-medium rounded-lg text-red-700 bg-white hover:bg-red-50 transition">
+                        Résilier (Retour au plan Gratuit)
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Dynamic Database Subscriptions (Standard & Premium) -->
+        {% for sub in subscriptions %}
+            {% set isActive = app.user.subscription is not null and app.user.subscription.id == sub.id %}
+            <div class="bg-white rounded-2xl shadow-sm border {% if isActive %}border-indigo-600 ring-2 ring-indigo-600{% else %}border-gray-200{% endif %} p-8 flex flex-col justify-between relative">
+                {% if isActive %}
+                    <span class="absolute top-0 right-1/2 transform translate-x-1/2 -translate-y-1/2 bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full">Actif</span>
+                {% endif %}
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900">Plan {{ sub.name }}</h3>
+                    <p class="text-xs text-gray-500 mt-1">Upgrade de capacité instantanée</p>
+                    <div class="mt-4 flex items-baseline">
+                        <span class="text-4xl font-extrabold text-gray-950">{{ (sub.price / 100)|number_format(2, ',', ' ') }}€</span>
+                        <span class="text-sm font-medium text-gray-500 ml-1">/ mois</span>
+                    </div>
+                    <ul class="mt-6 space-y-4 text-sm text-gray-600 border-t border-gray-100 pt-6">
+                        <li class="flex items-center space-x-2">
+                            <span class="text-green-500">✓</span>
+                            <span class="font-bold text-gray-900">
+                                {% if sub.mediaLimit is null %}Médias Illimités ✨{% else %}Jusqu'à {{ sub.mediaLimit }} médias{% endif %}
+                            </span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <span class="text-green-500">✓</span>
+                            <span>Auto-complétion intelligente via APIs</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <span class="text-green-500">✓</span>
+                            <span>Suivi et historique des prêts</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="mt-8">
+                    {% if isActive %}
+                        <button disabled class="w-full inline-flex items-center justify-center px-4 py-2.5 border border-transparent text-sm font-medium rounded-lg text-green-800 bg-green-100 font-bold cursor-not-allowed">
+                            ✓ Plan Actif
+                        </button>
+                    {% else %}
+                        <a href="{{ path('app_dashboard_subscription_upgrade', {'id': sub.id}) }}" class="w-full inline-flex items-center justify-center px-4 py-2.5 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition">
+                            Activer ce Plan (Simulation)
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
